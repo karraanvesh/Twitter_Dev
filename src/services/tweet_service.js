@@ -10,7 +10,6 @@ class TweetService {
         const content = data.content;
         const tags = content.match(/#[a-zA-Z0-9_]+/g)
         .map((tag) => tag.substring(1).toLowerCase());; // this regex extracts hashtags
-        console.log(tags);
         const tweet = await this.tweetRepository.create(data);
         let alreadyPresentTags = await this.hashtagRepository.findByName(tags);
         let titleOfPresenttags = alreadyPresentTags.map(tags => tags.title);
@@ -20,15 +19,10 @@ class TweetService {
         });
         await this.hashtagRepository.bulkCreate(newTags);
         alreadyPresentTags.forEach((tag) => {
+            console.log(tag.tweets);
             tag.tweets.push(tweet.id);
             tag.save();
         });
-        // todo create hashtags and add here
-        /**
-         * 1. bulk create in mongoose
-         * 2. filter title of hashtag based on multiple tags
-         * 3. How to add tweet id inside all the hashtags
-         */
         return tweet;
     }
 }
